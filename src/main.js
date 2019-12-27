@@ -2,8 +2,11 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from './btnPermission'
 import ElementUI from 'element-ui'
+import util from '@/utils'
 import Router from 'vue-router'
 import axios from 'axios'
+
+import VueLazyLoad from 'vue-lazyload'
 import 'element-ui/lib/theme-chalk/index.css'
 import './assets/iconfont/iconfont.css'
 import 'font-awesome/css/font-awesome.css'
@@ -17,14 +20,25 @@ import i18n from './i18n/i18n'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
 // require styles
 import 'swiper/dist/css/swiper.css'
+import vuescroll from 'vuescroll'
 
 Vue.config.productionTip = false
+
 Vue.use(ElementUI)
+// Vue.use(axios, VueAxios)
+
+Vue.use(vuescroll)
 Vue.use(VueAwesomeSwiper)
+Vue.use(VueLazyLoad, {
+  preLoad: 1,
+  loading: require('@/assets/common/placeholder.png')
+})
+
 Vue.prototype.$axios = axios
 axios.defaults.baseURL = 'http://47.98.145.222:8080/'
 // axios.defaults.baseURL = 'http://192.168.2.156:8080/'
 // axios.defaults.baseURL = 'http://192.168.2.38:8080/'
+
 //  获取角色信息，根据用户权限动态加载路由
 router.beforeEach((to, from, next) => {
   console.log(store.getters.token)
@@ -74,6 +88,7 @@ router.beforeEach((to, from, next) => {
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  util,
   router,
   store,
   i18n,

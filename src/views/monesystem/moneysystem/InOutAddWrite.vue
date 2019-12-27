@@ -47,7 +47,6 @@
           <el-form-item label="项目信息">
             <!-- 级联选择器 -->
             <div class="block">
-              <!-- <el-cascader v-model="InoutwriteForm.projectInfoId"></el-cascader> -->
               <el-select v-model="InoutwriteForm.projectInfo.projectInfoId" placeholder="请选择">
                 <el-option
                   v-for="item in projectOptions"
@@ -64,33 +63,8 @@
             <el-input v-model="InoutwriteForm.comment"></el-input>
           </el-form-item>
         </el-col>
-
-        <!-- <el-col :span="6">
-          <el-form-item label="业务人员">
-            <el-select v-model="InoutwriteForm.clerk" placeholder="请选择">
-              <el-option
-                v-for="item in syroptions"
-                :key="item.userInfoId"
-                :label="item.userName"
-                :value="item.userName"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>-->
       </el-row>
       <el-row>
-        <!-- <el-col :span="6">
-          <el-form-item label="实操人员">
-            <el-select v-model="InoutwriteForm.actualName" placeholder="请选择">
-              <el-option
-                v-for="item in syroptions"
-                :key="item.userInfoId"
-                :label="item.userName"
-                :value="item.userName"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>-->
         <el-col :span="6">
           <el-form-item label="币　　种">
             <el-select
@@ -242,24 +216,6 @@
       <!-- </el-row> -->
       <el-row></el-row>
       <el-row>
-        <!-- <el-col :span="6">
-          <el-form-item label="审批人员">
-            <el-select
-              v-model="valuepeople"
-              @change="shenpivaluepeople(valuepeople)"
-              multiple
-              filterable
-              placeholder="请选择(可以搜索)"
-            >
-              <el-option
-                v-for="item in syroptions"
-                :key="item.id "
-                :label="item.name"
-                :value="item.id "
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>-->
         <el-col :span="6">
           <div>
             <el-form-item label="备　　注">
@@ -283,32 +239,15 @@
       </el-row>
       <!-- ///// -->
       <div>
-        <el-form-item label="审批人员">
-          <ul class="approveMan">
-            <li v-for="item in approveManlist" :key="item.id">
-              <img :src="item.avatar" alt>
-              <span
-                style="cursor: pointer;"
-                class="el-icon-circle-close"
-                @click="delApproveMan(item.id)"
-              ></span>&nbsp;
-              <span>></span>&nbsp;&nbsp;
-            </li>
-          </ul>
-
-          <ul class="approveMan">
-            <li style="padding-top:5px;">
-              <span
-                style="cursor: pointer; font-size:35px"
-                class="el-icon-circle-plus-outline"
-                @click="showPeopleInfo"
-              ></span>
-            </li>
-          </ul>
-        </el-form-item>
-        <!-- <el-form-item label>
-          <el-button type="success" @click="showPeopleInfo" style="margin-left:0;">点击选择人员</el-button>
-        </el-form-item>-->
+        <hbte-people-table
+          :approveManlist="approveManlist"
+          :applyManOptions="applyManOptions"
+          :treePeopleOptions="syroptions"
+          @del-approve-mancp="delApproveMancp"
+          @handle-node-click="handleNodeClickcp"
+          @handle-close="handleClosecp"
+          @apply-man="applyMancp"
+        ></hbte-people-table>
       </div>
       <div>
         <el-form-item label>
@@ -358,39 +297,15 @@
         <el-button type="primary" @click="addList(formtest)">保 存</el-button>
       </span>
     </el-dialog>
-    <!-- 选择人员模态框 -->
-    <el-dialog :visible.sync="choseDialogVisible" closable="false" width="18%">
-      <vuescroll :ops="ops" style="height:500px">
-        <div>
-          <el-tree
-            node-key="id"
-            :default-expanded-keys="[1]"
-            accordion
-            :data="syroptions"
-            :props="defaultProps"
-            @node-click="handleNodeClick"
-          >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
-              <span v-if="data.type==1" class="el-icon-office-building"></span>
-              <span v-else>
-                <span class="touxiang">
-                  <img :src="data.avatar" alt>
-                </span>
-              </span>&nbsp;
-              <span>{{ data.title }}</span>
-            </span>
-          </el-tree>
-        </div>
-      </vuescroll>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import $ from 'jquery'
 import vuescroll from 'vuescroll'
+import hbtePeopleTable from '@/components/hbteComponents/hbteChosePeople'
 export default {
-  components: { vuescroll },
+  components: { vuescroll, hbtePeopleTable },
   computed: {
     sumMoneyRate () {
       return +this.currentduilv * +this.InoutwriteForm.expenseAmount
@@ -475,7 +390,8 @@ export default {
         },
         actExecutions: []
       },
-
+      applyManOptions: [],
+      fahoutailist: [],
       // 收款方式级联选择器
       paymentOptions: [],
       // 货币信息选择器
@@ -519,25 +435,51 @@ export default {
     this.getbankInfoId()
     this.getsupplierId()
     this.getnameid()
+    this.applyManlist()
   },
   methods: {
-    delApproveMan (id) {
-      console.log(2)
+    async applyManlist () {
+      const { data } = await this.$axios.get(
+        'hbte-financial/hbte/userInfo/userInfoList'
+      )
+      // console.log(data.data)
+
+      this.applyManOptions = data.data
+    },
+    applyMancp (v) {
+      let currentManObj = this.applyManOptions.filter(item => {
+        return item.id === v
+      })
+      console.log(currentManObj[0])
+      for (var i = 0; i < this.approveManlist.length; i++) {
+        if (this.approveManlist[i].id == v) {
+          // this.choseDialogVisible = false
+          this.$message.error('已经选择相同人员了,请检查一波')
+          return
+        }
+      }
+      this.approveManlist.push(currentManObj[0])
+      let temp = this.approveManlist
+      let aa = temp.map(item => {
+        return item.id
+      })
+      this.fahoutailist = aa
+      console.log(this.fahoutailist)
+    },
+    handleClosecp (tag) {
       this.approveManlist = this.approveManlist.filter(item => {
-        return item.id !== id
+        return item.id !== tag.id
       })
       this.fahoutailist = this.approveManlist.map(item => {
         return item.id
       })
       console.log(this.fahoutailist)
-
-      // this.fahoutailist
     },
-    handleNodeClick (data) {
+    handleNodeClickcp (data) {
       console.log(data)
       for (var i = 0; i < this.approveManlist.length; i++) {
         if (this.approveManlist[i].id == data.id) {
-          this.choseDialogVisible = false
+          // this.choseDialogVisible = false
           this.$message.error('已经选择相同人员了,请检查一波')
           return
         }
@@ -545,7 +487,7 @@ export default {
 
       if (data.type == 2) {
         this.approveManlist.push(data)
-        this.choseDialogVisible = false
+        // this.choseDialogVisible = false
         console.log(this.approveManlist)
         this.fahoutailist = this.approveManlist.map(item => {
           return item.id
@@ -561,9 +503,24 @@ export default {
         }
         arr1.push(aa)
       }
+      console.log(this.approveManlist)
+
       this.InoutwriteForm.actExecutions = arr1
-      console.log(this.InoutwriteForm.actExecutions)
+      // console.log(this.InoutwriteForm.actExecutions)
     },
+    delApproveMancp (id) {
+      console.log(22)
+
+      console.log(2)
+      this.approveManlist = this.approveManlist.filter(item => {
+        return item.id !== id
+      })
+      this.fahoutailist = this.approveManlist.map(item => {
+        return item.id
+      })
+      console.log(this.fahoutailist)
+    },
+
     showPeopleInfo () {
       this.choseDialogVisible = true
     },

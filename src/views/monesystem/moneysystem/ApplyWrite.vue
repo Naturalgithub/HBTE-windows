@@ -134,22 +134,6 @@
       </el-form-item>-->
       <el-row>
         <el-col :span="6">
-          <!-- <el-form-item label="账　　号">
-            <el-input placeholder="请输入账号" v-model="InoutwriteForm.account" style="width:107%"></el-input>
-          </el-form-item>h-->
-        </el-col>
-        <el-col :span="6">
-          <!-- <el-form-item label="开户行　">
-
-            <el-select v-model="InoutwriteForm.bankInfo.bankInfoId" placeholder="请选择">
-              <el-option
-                v-for="item in UserInfoOptions"
-                :key="item.bankInfoId"
-                :label="item.bankName"
-                :value="item.bankInfoId"
-              ></el-option>
-            </el-select>
-          </el-form-item>-->
           <el-form-item label="所属部门">
             <el-cascader
               :options="departmentOptions"
@@ -251,32 +235,15 @@
       </el-row>
       <!-- ///// -->
       <div>
-        <el-form-item label="审批人员">
-          <ul class="approveMan">
-            <li v-for="item in approveManlist" :key="item.id">
-              <img :src="item.avatar" alt>
-              <span
-                style="cursor: pointer;"
-                class="el-icon-circle-close"
-                @click="delapproveMan(item.id)"
-              ></span>&nbsp;
-              <span>></span>&nbsp;&nbsp;
-            </li>
-          </ul>
-
-          <ul class="approveMan">
-            <li style="padding-top:5px;">
-              <span
-                style="cursor: pointer; font-size:35px"
-                class="el-icon-circle-plus-outline"
-                @click="showPeopleInfo"
-              ></span>
-            </li>
-          </ul>
-        </el-form-item>
-        <!-- <el-form-item label>
-          <el-button type="success" @click="showPeopleInfo" style="margin-left:0;">点击选择人员</el-button>
-        </el-form-item>-->
+        <hbte-people-table
+          :approveManlist="approveManlist"
+          :applyManOptions="applyManOptions"
+          :treePeopleOptions="syroptions"
+          @del-approve-mancp="delApproveMancp"
+          @handle-node-click="handleNodeClickcp"
+          @handle-close="handleClosecp"
+          @apply-man="applyMancp"
+        ></hbte-people-table>
       </div>
       <div>
         <el-form-item label>
@@ -326,44 +293,21 @@
         <el-button type="primary" @click="addList(formTest)">保 存</el-button>
       </span>
     </el-dialog>
-    <!-- 选择人员模态框 -->
-    <el-dialog :visible.sync="choseMandialogVisible" closable="false" width="18%">
-      <vuescroll :ops="ops" style="height:500px">
-        <div>
-          <el-tree
-            node-key="id"
-            :default-expanded-keys="[1]"
-            :data="syroptions"
-            :props="defaultProps"
-            @node-click="handleNodeClick"
-          >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
-              <span v-if="data.type==1" class="el-icon-office-building"></span>
-              <span v-else>
-                <span class="touxiang">
-                  <img :src="data.avatar" alt>
-                </span>
-              </span>&nbsp;
-              <span>{{ data.title }}</span>
-            </span>
-          </el-tree>
-        </div>
-      </vuescroll>
-    </el-dialog>
   </div>
 </template>
 
 <script>
+import hbtePeopleTable from '@/components/hbteComponents/hbteChosePeople'
 import $ from 'jquery'
 import vuescroll from 'vuescroll'
 export default {
-  components: { vuescroll },
+  components: { vuescroll, hbtePeopleTable },
   computed: {
-    sumMoneyRate () {
+    sumMoneyRate() {
       return +this.currentduilv * +this.InoutwriteForm.expenseAmount
     }
   },
-  data () {
+  data() {
     return {
       ops: {
         vuescroll: {},
@@ -377,6 +321,7 @@ export default {
           background: '#ccc'
         }
       },
+      fahoutailist: [],
       valuepeople1: '',
       data: [],
       defaultProps: {
@@ -462,6 +407,7 @@ export default {
       // 产品线信息选择器
       ProductOptions: [],
       // 项目信息选择器
+      applyManOptions: [],
       projectOption: [],
       valuepeople: [],
       syroptions: [],
@@ -474,7 +420,7 @@ export default {
       approveManlist: []
     }
   },
-  created () {
+  created() {
     this.getProductLineId()
     this.getPaymentTermId()
     this.getCurrencyInfoId()
@@ -491,35 +437,40 @@ export default {
     this.applyManlist()
   },
   methods: {
-    async applyManlist () {
-      const { data } = await this.$axios.get(
-        'hbte-financial/hbte/userInfo/userInfoList'
-      )
-      // console.log(data.data)
-
-      this.applyManOptions = data.data
+    applyMancp(v) {
+      let currentManObj = this.applyManOptions.filter(item => {
+        return item.id === v
+      })
+      console.log(currentManObj[0])
+      for (var i = 0; i < this.approveManlist.length; i++) {
+        if (this.approveManlist[i].id == v) {
+          // this.choseDialogVisible = false
+          this.$message.error('已经选择相同人员了,请检查一波')
+          return
+        }
+      }
+      this.approveManlist.push(currentManObj[0])
+      let temp = this.approveManlist
+      let aa = temp.map(item => {
+        return item.id
+      })
+      this.fahoutailist = aa
+      console.log(this.fahoutailist)
     },
-    applyMan (v) {
-      console.log(v)
-      this.InoutwriteForm.expenseUserInfo.id = v
-    },
-    delapproveMan (id) {
-      console.log(2)
+    handleClosecp(tag) {
       this.approveManlist = this.approveManlist.filter(item => {
-        return item.id !== id
+        return item.id !== tag.id
       })
       this.fahoutailist = this.approveManlist.map(item => {
         return item.id
       })
       console.log(this.fahoutailist)
-
-      // this.fahoutailist
     },
-    handleNodeClick (data) {
+    handleNodeClickcp(data) {
       console.log(data)
       for (var i = 0; i < this.approveManlist.length; i++) {
         if (this.approveManlist[i].id == data.id) {
-          this.choseMandialogVisible = false
+          // this.choseDialogVisible = false
           this.$message.error('已经选择相同人员了,请检查一波')
           return
         }
@@ -527,7 +478,7 @@ export default {
 
       if (data.type == 2) {
         this.approveManlist.push(data)
-        this.choseMandialogVisible = false
+        // this.choseDialogVisible = false
         console.log(this.approveManlist)
         this.fahoutailist = this.approveManlist.map(item => {
           return item.id
@@ -537,19 +488,39 @@ export default {
       // actExecutions
       const arr1 = []
       for (let i = 0; i < this.approveManlist.length; i++) {
-        var valueaa = {
+        var aa = {
           userInfo: { id: this.approveManlist[i].id },
           actExecutionPriority: i
         }
-        arr1.push(valueaa)
+        arr1.push(aa)
       }
+      console.log(this.approveManlist)
+
       this.InoutwriteForm.actExecutions = arr1
-      console.log(this.InoutwriteForm.actExecutions)
+      // console.log(this.InoutwriteForm.actExecutions)
     },
-    showPeopleInfo () {
-      this.choseMandialogVisible = true
+    delApproveMancp(id) {
+      console.log(22)
+
+      console.log(2)
+      this.approveManlist = this.approveManlist.filter(item => {
+        return item.id !== id
+      })
+      this.fahoutailist = this.approveManlist.map(item => {
+        return item.id
+      })
+      console.log(this.fahoutailist)
     },
-    async getFile (event) {
+    async applyManlist() {
+      const { data } = await this.$axios.get(
+        'hbte-financial/hbte/userInfo/userInfoList'
+      )
+      // console.log(data.data)
+
+      this.applyManOptions = data.data
+    },
+
+    async getFile(event) {
       let form = new FormData() // FormData 对象
       // console.log(form)
       this.formInfo = form
@@ -566,14 +537,14 @@ export default {
       ) // 单据类型
     },
 
-    getNameId () {
+    getNameId() {
       const data = JSON.parse(localStorage.getItem('data'))
       // console.log(data.id)
       this.InoutwriteForm.userInfo.id = data.id
       this.InoutwriteForm.userInfo.name = data.userName
     },
     // 计算货币兑率反显
-    moneyExchangeRate (duilv) {
+    moneyExchangeRate(duilv) {
       // console.log(this.currencyInfoOptions)
       const hb = this.currencyInfoOptions
       let needhblv = hb.filter(item => {
@@ -591,13 +562,13 @@ export default {
       this.turnRMB = this.duilv * num
       // console.log(this.turnRMB)
     },
-    deleteRow (index, rows) {
+    deleteRow(index, rows) {
       rows.splice(index, 1)
     },
-    startIn () {
+    startIn() {
       this.dialogVisible = true
     },
-    addList (formTest) {
+    addList(formTest) {
       // console.log(11)
       let productLineId = this.formTest.productLineId
       let sumRatio = this.formTest.sumRatio
@@ -617,16 +588,16 @@ export default {
       this.formTest.productLineName = ''
       this.formTest.sumRatio = ''
     },
-    ProductLine (value) {
+    ProductLine(value) {
       var obj = {}
-      obj = this.ProductOptions.find(function (item) {
+      obj = this.ProductOptions.find(function(item) {
         return item.productLineId === value
       })
       // console.log(obj)
       this.valueaa = obj.productLineName
       // obj 就是被选中的那个对象，
     },
-    async getPaymentTermId () {
+    async getPaymentTermId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/paymentTerm/paymentTermList'
       )
@@ -649,7 +620,7 @@ export default {
       this.InoutwriteForm.oddNumber = `HBTE-${year}${month}${day}${cca}`
     },
     // 获取货币信息id
-    async getCurrencyInfoId () {
+    async getCurrencyInfoId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/currency/currencyInfoList'
       )
@@ -657,7 +628,7 @@ export default {
       this.currencyInfoOptions = data.data
     },
     // // 获取客户信息id
-    async getcustomerInfoId () {
+    async getcustomerInfoId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/customer/customerInfoList'
       )
@@ -665,7 +636,7 @@ export default {
       this.custmerOptions = data.data
     },
     // 获取客户信息id
-    async getbankInfoId () {
+    async getbankInfoId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/bank/bankInfoList'
       )
@@ -674,7 +645,7 @@ export default {
       // console.log(this.UserInfoOptions)
     },
     // // 获取公司信息id
-    async getcompanyInfoId () {
+    async getcompanyInfoId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/company/companyInfoList'
       )
@@ -682,7 +653,7 @@ export default {
       this.companyOptions = data.data
       // console.log(this.UserInfoOptions)
     },
-    async getaccountTitleId () {
+    async getaccountTitleId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/accountTitle/accountTitleList'
       )
@@ -690,7 +661,7 @@ export default {
       // console.log(data)
       this.accountTitleOptions = this.getTreeData(data.data)
     }, // 递归方法
-    getTreeData (data) {
+    getTreeData(data) {
       // 循环遍历json数据
       for (var i = 0; i < data.length; i++) {
         if (data[i].children.length < 1) {
@@ -703,24 +674,24 @@ export default {
       }
       return data
     },
-    accountHandleChange (value) {
+    accountHandleChange(value) {
       // console.log(value)
       this.InoutwriteForm.accountTitle.accountTitleId =
         value[value.length - 1] || -1
     },
-    async getId () {
+    async getId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/department/departmentList'
       )
       // console.log(data.data)
       this.departmentOptions = this.getTreeData(data.data)
     },
-    departmentHandleChange (value) {
+    departmentHandleChange(value) {
       // console.log(value.length - 1)
       this.InoutwriteForm.department.id = value[value.length - 1] || -1
     },
     // 获取产品线信息id
-    async getProductLineId () {
+    async getProductLineId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/productLine/productLineList'
       )
@@ -729,7 +700,7 @@ export default {
       // console.log(this.UserInfoOptions)
     },
     // 获取项目信息id
-    async getprojectInfoId () {
+    async getprojectInfoId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/project/projectInfoList'
       )
@@ -738,7 +709,7 @@ export default {
       // console.log(this.projectOption)
     },
     // // 立即录入
-    async addListModel () {
+    async addListModel() {
       if (this.InoutwriteForm.eventInfo.eventComment == '') {
         this.$message.error('提交前,请确认备注是否漏填')
         return
@@ -816,7 +787,7 @@ export default {
       }
     },
 
-    async getUserInfoList () {
+    async getUserInfoList() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/department/departmentUserList'
       )
@@ -824,7 +795,7 @@ export default {
 
       this.syroptions = data.data
     },
-    async getSupplierId () {
+    async getSupplierId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/supplier/supplierList'
       )

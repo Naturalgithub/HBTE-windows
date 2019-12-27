@@ -1,11 +1,6 @@
 <template>
   <div class="InOutWrite">
     <!-- 面包屑 -->
-    <!-- <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>收支系统</el-breadcrumb-item>
-      <el-breadcrumb-item>收支录入</el-breadcrumb-item>
-    </el-breadcrumb>-->
     <!-- ===== -->
     <!-- 分栏 -->
     <!-- 导入功能 -->
@@ -84,10 +79,6 @@
           <el-form-item label="收入金额">
             <el-input placeholder="请输入收入金额" v-model="InoutwriteForm.incomeAmount"></el-input>
           </el-form-item>
-
-          <!-- <el-form-item label="支出金额">
-        <el-input placeholder="请输入支出金额" v-model="InoutwriteForm.expenseAmount"></el-input>
-          </el-form-item>-->
         </el-col>
         <el-col :span="6">
           <el-form-item label="兑人民币">
@@ -98,7 +89,6 @@
         <el-col :span="6">
           <el-form-item label="所属公司">
             <div class="block">
-              <!-- <el-cascader v-model="InoutwriteForm.companyInfoId"></el-cascader> -->
               <el-select v-model="InoutwriteForm.companyInfo.companyInfoId" placeholder="请选择">
                 <el-option
                   v-for="item in companyOptions"
@@ -123,107 +113,11 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <!-- <el-form-item label="账   号">
-        <el-input placeholder="请输入账号" v-model="InoutwriteForm.account"></el-input>
-          </el-form-item>-->
         </el-col>
-        <!-- <el-col :span="6">
-          <el-form-item label="业务人员">
-            <el-select v-model="InoutwriteForm.clerk" placeholder="请选择">
-              <el-option
-                v-for="item in syroptions"
-                :key="item.userInfoId"
-                :label="item.userName"
-                :value="item.userName"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>-->
       </el-row>
-      <el-row>
-        <!-- <el-col :span="6">
-          <el-form-item label="实操人员">
-            <el-select v-model="InoutwriteForm.actualName" placeholder="请选择">
-              <el-option
-                v-for="item in syroptions"
-                :key="item.userInfoId"
-                :label="item.userName"
-                :value="item.userName"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>-->
-      </el-row>
-      <!-- <el-form-item label="部门">
-        <el-cascader
-          :options="departmentOptions"
-          :props="{
-        checkStrictly: true,
-        label: 'departmentName',
-        value: 'departmentId',
-        children: 'children'
-      }"
-          clearable
-          @change="departmentHandleChange"
-          placeholder="请选择(默认为一级分类)"
-        >
-          <template v-slot:default="obj">
-            <span>{{ obj.data.departmentName}}</span>
-          </template>
-        </el-cascader>
-      </el-form-item>-->
-      <!-- <el-form-item label="项目信息">
-        <div class="block">
-          <el-select v-model="InoutwriteForm.projectInfo.projectInfoId" placeholder="请选择">
-            <el-option
-              v-for="item in xmxxoptions"
-              :key="item.projectInfoId"
-              :label="item.projectName"
-              :value="item.projectInfoId"
-            ></el-option>
-          </el-select>
-        </div>
-      </el-form-item>-->
+      <el-row></el-row>
 
-      <!-- <el-form-item label="银行信息">
-
-        <el-select v-model="InoutwriteForm.bankInfo.bankInfoId" placeholder="请选择">
-          <el-option
-            v-for="item in yhxxoptions"
-            :key="item.bankInfoId"
-            :label="item.bankName"
-            :value="item.bankInfoId"
-          ></el-option>
-        </el-select>
-      </el-form-item>-->
       <el-row>
-        <!-- <el-col :span="6">
-          <el-form-item label="审核人　">
-            <treeselect
-              v-model="value"
-              :normalizer="normalizer"
-              :multiple="true"
-              :options="syroptions"
-              @change="peopleinfo"
-            />
-            <el-select
-              v-model="valuepeople"
-              @change="shenpivaluepeople(valuepeople)"
-              multiple
-              filterable
-              placeholder="请选择(可以搜索)"
-              style="width:93%"
-            >
-              <el-option
-                v-for="item in syroptions"
-                :key="item.userInfoId "
-                :label="item.userName"
-                :value="item.userInfoId "
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">-->
         <el-col :span="6">
           <el-form-item label="会计科目">
             <!-- 级联选择器 -->
@@ -305,9 +199,6 @@
             </li>
           </ul>
         </el-form-item>
-        <!-- <el-form-item label>
-          <el-button type="success" @click="showpeopleinfo" style="margin-left:0;">点击选择人员</el-button>
-        </el-form-item>-->
       </div>
       <div>
         <el-form-item label>
@@ -315,6 +206,16 @@
         </el-form-item>
         <el-button type="success" @click="addListmoban">录入</el-button>
       </div>
+      <!-- <hbte-people-table :approveManlist="approveManlist"></hbte-people-table>
+      <hbte-people-table
+        :approveManlist="approveManlist"
+        :applyManOptions="applyManOptions"
+        :treePeopleOptions="syroptions"
+        @del-approve-mancp="delApproveMancp"
+        @handle-node-click="handleNodeClickcp"
+        @handle-close="handleClosecp"
+        @apply-man="applyMancp"
+      ></hbte-people-table>-->
     </el-form>
     <!-- 表格 -->
     <el-table :data="tableData" style="width: 100%">
@@ -358,49 +259,80 @@
     </el-dialog>
     <!-- 选择人员模态框 -->
     <el-dialog title="选人" :visible.sync="choseDialogVisible" closable="false" width="40%">
-      <vuescroll :ops="ops">
-        <div>
-          <div class="fl">asds</div>
-          <el-tree
-            class="fr"
-            node-key="id"
-            :default-expanded-keys="[1]"
-            accordion
-            :data="syroptions"
-            :props="defaultProps"
-            @node-click="handleNodeClick"
-          >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
-              <span v-if="data.type==1" class="el-icon-office-building"></span>
-              <span v-else>
-                <span class="touxiang">
-                  <img :src="data.avatar" alt>
-                </span>
-              </span>&nbsp;
-              <span>{{ data.title }}</span>
-            </span>
-          </el-tree>
-        </div>
-      </vuescroll>
+      <div class="hbtePeopleTree">
+        <vuescroll :ops="ops">
+          <div>
+            <div class="fl">
+              <!-- 可以搜索 -->
+              <el-select
+                style="margin-bottom:10px  "
+                v-model="valuepeople1"
+                @change="applyMan(valuepeople1)"
+                filterable
+                placeholder="请选择(可以搜索)"
+              >
+                <el-option
+                  v-for="item in applyManOptions"
+                  :key="item.id "
+                  :label="item.name"
+                  :value="item.id "
+                  :currentObj="item.name"
+                ></el-option>
+              </el-select>
+              <el-tag
+                :key="tag.id"
+                v-for="tag in approveManlist"
+                closable
+                :disable-transitions="false"
+                @close="handleClose(tag)"
+              >
+                <img class="approveManImg" :src="tag.avatar" alt>
+                {{tag.title||tag.name}}
+              </el-tag>
+            </div>
+            <el-tree
+              class="fr"
+              node-key="id"
+              :default-expanded-keys="[1]"
+              accordion
+              :data="syroptions"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+              ref="PeopleTree"
+              style="height: 550px;"
+            >
+              <span slot-scope="{ node, data }" class="custom-tree-node">
+                <span v-if="data.type==1" class="el-icon-office-building"></span>
+                <span v-else>
+                  <span class="touxiang">
+                    <img :src="data.avatar" alt>
+                  </span>
+                </span>&nbsp;
+                <span>{{ data.title }}</span>
+              </span>
+            </el-tree>
+          </div>
+        </vuescroll>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import $ from 'jquery'
-import Treeselect from '@riophae/vue-treeselect'
-// import the styles
-import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+
 import vuescroll from 'vuescroll'
+import hbtePeopleTable from '../../../components/hbteComponents/hbteChosePeople'
 export default {
-  components: { Treeselect, vuescroll },
+  components: { vuescroll, hbtePeopleTable },
   computed: {
-    sumMoneyRate () {
+    sumMoneyRate() {
       return +this.currentduilv * +this.InoutwriteForm.incomeAmount
     }
   },
-  data () {
+  data() {
     return {
+      backupPeople: [{ name: '张三', id: 1 }, { name: '李四', id: 2 }],
       ops: {
         vuescroll: {},
         scrollPanel: {},
@@ -506,10 +438,14 @@ export default {
       currentduilv: '',
       daorudialogVisible: false,
       choseDialogVisible: false,
-      fahoutailist: []
+      fahoutailist: [],
+      filterText: '',
+      applyManOptions: [],
+      valuepeople1: '',
+      currentObj: {}
     }
   },
-  created () {
+  created() {
     this.getproductLineId()
     this.getpaymentTermId()
     this.getcurrencyInfoId()
@@ -522,9 +458,50 @@ export default {
     this.getuserInfoList()
     this.getbankInfoId()
     this.getnameid()
+    this.applyManlist()
   },
+
   methods: {
-    delshenpiren (id) {
+    async applyManlist() {
+      const { data } = await this.$axios.get(
+        'hbte-financial/hbte/userInfo/userInfoList'
+      )
+      // console.log(data.data)
+
+      this.applyManOptions = data.data
+    },
+    applyMan(v) {
+      let currentManObj = this.applyManOptions.filter(item => {
+        return item.id === v
+      })
+      console.log(currentManObj[0])
+      for (var i = 0; i < this.approveManlist.length; i++) {
+        if (this.approveManlist[i].id == v) {
+          // this.choseDialogVisible = false
+          this.$message.error('已经选择相同人员了,请检查一波')
+          return
+        }
+      }
+      this.approveManlist.push(currentManObj[0])
+      let temp = this.approveManlist
+      let aa = temp.map(item => {
+        return item.id
+      })
+      this.fahoutailist = aa
+      console.log(this.fahoutailist)
+    },
+    handleClose(tag) {
+      console.log(tag.id)
+      console.log(2)
+      this.approveManlist = this.approveManlist.filter(item => {
+        return item.id !== tag.id
+      })
+      this.fahoutailist = this.approveManlist.map(item => {
+        return item.id
+      })
+      console.log(this.fahoutailist)
+    },
+    delshenpiren(id) {
       console.log(2)
       this.approveManlist = this.approveManlist.filter(item => {
         return item.id !== id
@@ -536,11 +513,11 @@ export default {
 
       // this.fahoutailist
     },
-    handleNodeClick (data) {
+    handleNodeClick(data) {
       console.log(data)
       for (var i = 0; i < this.approveManlist.length; i++) {
         if (this.approveManlist[i].id == data.id) {
-          this.choseDialogVisible = false
+          // this.choseDialogVisible = false
           this.$message.error('已经选择相同人员了,请检查一波')
           return
         }
@@ -548,7 +525,7 @@ export default {
 
       if (data.type == 2) {
         this.approveManlist.push(data)
-        this.choseDialogVisible = false
+        // this.choseDialogVisible = false
         console.log(this.approveManlist)
         this.fahoutailist = this.approveManlist.map(item => {
           return item.id
@@ -564,13 +541,15 @@ export default {
         }
         arr1.push(aa)
       }
+      console.log(this.approveManlist)
+
       this.InoutwriteForm.actExecutions = arr1
-      console.log(this.InoutwriteForm.actExecutions)
+      // console.log(this.InoutwriteForm.actExecutions)
     },
-    showpeopleinfo () {
+    showpeopleinfo() {
       this.choseDialogVisible = true
     },
-    normalizer (node) {
+    normalizer(node) {
       // 去掉children=[]的children属性
       if (node.children && !node.children.length) {
         delete node.children
@@ -581,14 +560,14 @@ export default {
         children: node.children
       }
     },
-    peopleinfo (value) {
+    peopleinfo(value) {
       console.log(value)
     },
     // 点击导入按钮
-    Inbtn () {
+    Inbtn() {
       this.daorudialogVisible = true
     },
-    async getFile (event) {
+    async getFile(event) {
       let form = new FormData() // FormData 对象
       // console.log(form)
       this.form1 = form
@@ -604,7 +583,7 @@ export default {
         this.InoutwriteForm.incomeExpenseType
       ) // 单据类型
     },
-    async sureupload () {
+    async sureupload() {
       this.daorudialogVisible = false
       this.huixianame = ''
       // console.log(this.wenjian)
@@ -622,7 +601,7 @@ export default {
         cache: false, // 不缓存
         processData: false, // jQuery不要去处理发送的数据
         contentType: false, // jQuery不要去设置Content-Type请求头
-        success: function (data) {
+        success: function(data) {
           // 成功回调
           // console.log(data)
 
@@ -632,7 +611,7 @@ export default {
             that.$message.error(data.errorMsg)
           }
         },
-        error: function (data) {
+        error: function(data) {
           // 失败回调
           // console.log(data)
         }
@@ -645,15 +624,15 @@ export default {
 
       this.daorudialogVisible = false
     },
-    showdaoru () {},
+    showdaoru() {},
     // 计算货币兑率反显
-    getnameid () {
+    getnameid() {
       const data = JSON.parse(localStorage.getItem('data'))
       // console.log(data.id)
       this.id = data.id
       this.InoutwriteForm.userInfo.id = data.id
     },
-    huobiduilv (duilv) {
+    huobiduilv(duilv) {
       // console.log(this.currencyInfoOptions)
       const hb = this.currencyInfoOptions
       let needhblv = hb.filter(item => {
@@ -671,13 +650,13 @@ export default {
       this.duiRMB = this.duilv * num
       // console.log(this.duiRMB)
     },
-    deleteRow (index, rows) {
+    deleteRow(index, rows) {
       rows.splice(index, 1)
     },
-    startIn () {
+    startIn() {
       this.dialogVisible = true
     },
-    addList (formtest) {
+    addList(formtest) {
       // console.log(11)
       let productLineId = this.formtest.productLineId
       let sumRatio = this.formtest.sumRatio
@@ -697,16 +676,16 @@ export default {
       this.formtest.productLineName = ''
       this.formtest.sumRatio = ''
     },
-    chanpinxian (value) {
+    chanpinxian(value) {
       var obj = {}
-      obj = this.cpxxxoptions.find(function (item) {
+      obj = this.cpxxxoptions.find(function(item) {
         return item.productLineId === value
       })
       // console.log(obj)
       this.aa = obj.productLineName
       // obj 就是被选中的那个对象，
     },
-    async getpaymentTermId () {
+    async getpaymentTermId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/paymentTerm/paymentTermList'
       )
@@ -726,7 +705,7 @@ export default {
       this.InoutwriteForm.oddNumber = `HBTE-${year}${month}${day}${cca}`
     },
     // 获取货币信息id
-    async getcurrencyInfoId () {
+    async getcurrencyInfoId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/currency/currencyInfoList'
       )
@@ -734,7 +713,7 @@ export default {
       this.currencyInfoOptions = data.data
     },
     // // 获取客户信息id
-    async getcustomerInfoId () {
+    async getcustomerInfoId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/customer/customerInfoList'
       )
@@ -742,7 +721,7 @@ export default {
       this.khxxoptions = data.data
     },
     // 获取客户信息id
-    async getbankInfoId () {
+    async getbankInfoId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/bank/bankInfoList'
       )
@@ -751,7 +730,7 @@ export default {
       // console.log(this.yhxxoptions)
     },
     // // 获取公司信息id
-    async getcompanyInfoId () {
+    async getcompanyInfoId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/company/companyInfoList'
       )
@@ -759,7 +738,7 @@ export default {
       this.companyOptions = data.data
       // console.log(this.yhxxoptions)
     },
-    async getaccountTitleId () {
+    async getaccountTitleId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/accountTitle/accountTitleList'
       )
@@ -767,7 +746,7 @@ export default {
       // console.log(data)
       this.accountTitleOptions = this.getTreeData(data.data)
     }, // 递归方法
-    getTreeData (data) {
+    getTreeData(data) {
       // 循环遍历json数据
       for (var i = 0; i < data.length; i++) {
         if (data[i].children.length < 1) {
@@ -780,25 +759,25 @@ export default {
       }
       return data
     },
-    kjhandleChange (value) {
+    kjhandleChange(value) {
       // console.log(value)
       this.InoutwriteForm.accountTitle.accountTitleId =
         value[value.length - 1] || -1
     },
-    async getdepartmentId () {
+    async getdepartmentId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/department/departmentList'
       )
       // console.log(data.data)
       this.departmentOptions = data.data
     },
-    departmentHandleChange (value) {
+    departmentHandleChange(value) {
       // console.log(value.length - 1)
       this.InoutwriteForm.department.departmentId =
         value[value.length - 1] || -1
     },
     // 获取产品线信息id
-    async getproductLineId () {
+    async getproductLineId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/productLine/productLineList'
       )
@@ -807,7 +786,7 @@ export default {
       // console.log(this.yhxxoptions)
     },
     // 获取项目信息id
-    async getprojectInfoId () {
+    async getprojectInfoId() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/project/projectInfoList'
       )
@@ -816,7 +795,7 @@ export default {
       // console.log(this.xmxxoptions)
     },
     // // 立即录入
-    async addListmoban () {
+    async addListmoban() {
       console.log(2)
       // this.$refs.ruleForm.validate()
       if (this.InoutwriteForm.currencyInfo.currencyInfoId == '') {
@@ -881,43 +860,7 @@ export default {
         this.$message.error(data.errorMsg)
       }
     },
-    // async addList () {
-    //   try {
-    //     const { data } = await this.$axios.post(
-    //       'hbte-financial/hbte/incomeExpense/saveIncomeExpenseInfo',
-    //       this.InoutwriteForm
-    //     )
-    //     console.log(data)
-    //     if (data.code === 0) {
-    //       this.$message.success('数据录入成功')
-    //       // window.location.reload()
-    //       this.$router.go('InOutWrite')
-    //     } else {
-    //       this.$message.error('数据录入失败')
-    //       window.location.reload()
-    //     }
-    //   } catch (e) {
-    //     console.log(e)
-    //     this.$message.error('录入失败,请检查数据格式是否正确')
-    //   }
-    // },
-    // resetForm () {
-    //   // 通过 ref 拿到 el-form 组件, 调用重置方法
-    //   // this.$refs.InoutwriteForm.resetFields()
-    //   // this.$router.go('InOutWrite')
-    //   // this.getpaymentTermId()
-    //   // this.getcurrencyInfoId()
-    //   // this.getcustomerInfoId()
-    //   // this.getbankInfoId()
-    //   // this.getaccountTitleId()
-    //   // this.getcompanyInfoId()
-    //   // this.getdepartmentId()
-    //   // this.getproductLineId()
-    //   // this.getprojectInfoId()
-    //   // this.getuserInfoList()
-    //   console.log(222)
-    // },
-    async getuserInfoList () {
+    async getuserInfoList() {
       const { data } = await this.$axios.get(
         'hbte-financial/hbte/department/departmentUserList'
       )
@@ -926,7 +869,7 @@ export default {
       this.syroptions = data.data
     },
     // // ??
-    shenpivaluepeople (v) {
+    shenpivaluepeople(v) {
       // console.log(v)
       const arr1 = []
       for (var i = 0; i < v.length; i++) {
@@ -1021,8 +964,23 @@ export default {
 }
 .fl {
   float: left;
+  width: 70%;
 }
 .fr {
   float: right;
+}
+>>> .el-dialog__body {
+  padding-top: 0px !important;
+}
+.el-tag + .el-tag {
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+.approveManImg {
+  width: 25px;
+  height: 25px;
+  margin-right: 5px;
+  border-radius: 50%;
+  vertical-align: middle;
 }
 </style>

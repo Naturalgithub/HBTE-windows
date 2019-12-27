@@ -10,7 +10,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     token: Cookies.get('token'),
-    id: JSON.parse(localStorage.getItem('data')).id,
+    // id: JSON.parse(localStorage.getItem('data')).id,
     // token: localStorage.getItem('token')
     // baseurl: 'http://192.168.2.38:8080/',
     baseurl: 'http://47.98.145.222:8080/',
@@ -20,15 +20,15 @@ const store = new Vuex.Store({
     isMobile: false// 确定是否为手机宽度
   },
   mutations: {
-    ishowasideapp (state, value) {
+    ishowasideapp(state, value) {
       state.showaside = value
     },
     // 判断是不是手机端
-    SET_MOBLIE (state, isMobile) {
+    SET_MOBLIE(state, isMobile) {
       state.isMobile = isMobile
     },
 
-    ishowaside (state) {
+    ishowaside(state) {
       if (state.showaside === false) {
         state.showaside = true
       } else {
@@ -36,13 +36,13 @@ const store = new Vuex.Store({
       }
     },
 
-    setToken (state, token) {
+    setToken(state, token) {
       state.token = token
       Cookies.set('token', token, { expires: 1 / 24 })
     }
   },
   actions: {
-    setToken ({ commit }, token) {
+    setToken({ commit }, token) {
       return new Promise((resolve, reject) => {
         commit('setToken', token)
         resolve()

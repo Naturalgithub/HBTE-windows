@@ -12,19 +12,11 @@ import NewIndex2 from '@/views/newindex/NewIndex2'
 const Icon = () => import('@/views/icon/index')
 const IndexTwo = () => import('@/views/icon/IndexTwo')
 const IndexThree = () => import('@/views/icon/IndexThree')
-const Erji = () => import('@/views/duoji/erji')
-const Erji2 = () => import('@/views/duoji/erji2')
-const Sanji = () => import('@/views/duoji/sanji')
-const Sanji2 = () => import('@/views/duoji/sanji2')
-const Siji = () => import('@/views/duoji/siji')
-const Wuji = () => import('@/views/duoji/wuji')
-const Transfer = () => import('@/views/transfer/transfer')
-const DataTable = () => import('@/views/table/dataTables')
-const FilterTable = () => import('@/views/table/filterTable')
-const DragTable = () => import('@/views/table/dragTabe')
+
+
+
 const Upload = () => import('@/views/upload/upload')
-const Markdown = () => import('@/views/editor/markdownView')
-const WangeditorView = () => import('@/views/editor/wangeditorView')
+
 
 const NotFound = () => import('@/page404')
 const AddArticle = () => import('@/views/article/addArticle')
