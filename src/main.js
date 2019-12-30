@@ -2,7 +2,6 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from './btnPermission'
 import ElementUI from 'element-ui'
-import util from '@/utils'
 import Router from 'vue-router'
 import axios from 'axios'
 
@@ -88,7 +87,6 @@ router.beforeEach((to, from, next) => {
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
-  util,
   router,
   store,
   i18n,
